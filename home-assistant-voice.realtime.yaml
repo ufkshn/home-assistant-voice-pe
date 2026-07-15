@@ -2088,15 +2088,12 @@ micro_wake_word:
     gain_factor: 4
   stop_after_detection: false
   models:
-    # PERSONAL VARIANT: alexa-only start wake word (microWakeWord v2.1).
-    # The stock start words (okay_nabu / hey_jarvis / hey_mycroft) were
-    # removed on purpose. "stop" stays — it's the reliable barge-in/interrupt
+    # CUSTOM VARIANT: "jarvis" start wake word, trained on Ufuk & Ilknur's real
+    # voice recordings + GCloud/OpenAI TTS (710 positives) with microWakeWord.
+    # Hosted in this fork's models/ dir. "stop" stays — the barge-in/interrupt
     # word, armed only while the assistant is replying (see on_phase below).
-    # Model source: the kahrendt/microWakeWord release URL (v2.1_models/alexa.json)
-    # 404s now — the models moved to the esphome/micro-wake-word-models repo.
-    # Point at the current canonical location (models/v2/alexa.json).
-    - model: https://github.com/esphome/micro-wake-word-models/raw/main/models/v2/alexa.json
-      id: alexa
+    - model: https://github.com/ufkshn/home-assistant-voice-pe/raw/main/models/jarvis.json
+      id: jarvis
     - model: https://github.com/kahrendt/microWakeWord/releases/download/stop/stop.json
       id: stop
       internal: true
@@ -2311,7 +2308,7 @@ select:
     name: "Wake word sensitivity"
     id: wake_word_sensitivity
     optimistic: true
-    initial_option: Slightly sensitive
+    initial_option: Very sensitive
     restore_value: true
     entity_category: config
     options:
@@ -2322,17 +2319,17 @@ select:
       # Sets specific wake word probabilities computed for each particular model
       # Note probability cutoffs are set as a quantized uint8 value, each comment has the corresponding floating point cutoff
       # False Accepts per Hour values are tested against all units and channels from the Dinner Party Corpus.
-      # PERSONAL VARIANT: only the alexa@v2.1 model is built in now, so the
-      # three tiers just adjust its cutoff. Cutoffs are quantized uint8
-      # (round(probability * 255)); LOWER = more sensitive = more false
-      # accepts. Spacing mirrors the proven okay_nabu tiers.
+      # CUSTOM VARIANT: the custom "jarvis" model is built in now, so the three
+      # tiers adjust its cutoff. Cutoffs are quantized uint8 (round(p * 255));
+      # LOWER = more sensitive = more false accepts. Our model is high-precision
+      # (trained on real user voices), so the tiers run more sensitive than stock.
       lambda: |-
         if (x == "Slightly sensitive") {
-          id(alexa).set_probability_cutoff(217);   // ~0.85
+          id(jarvis).set_probability_cutoff(178);   // ~0.70
         } else if (x == "Moderately sensitive") {
-          id(alexa).set_probability_cutoff(178);   // ~0.70
+          id(jarvis).set_probability_cutoff(140);   // ~0.55
         } else if (x == "Very sensitive") {
-          id(alexa).set_probability_cutoff(140);   // ~0.55
+          id(jarvis).set_probability_cutoff(102);   // ~0.40
         }
 
 
