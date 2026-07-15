@@ -2092,7 +2092,7 @@ micro_wake_word:
     # voice recordings + GCloud/OpenAI TTS (710 positives) with microWakeWord.
     # Hosted in this fork's models/ dir. "stop" stays — the barge-in/interrupt
     # word, armed only while the assistant is replying (see on_phase below).
-    - model: https://github.com/ufkshn/home-assistant-voice-pe/raw/main/models/jarvis.json
+    - model: https://raw.githubusercontent.com/ufkshn/home-assistant-voice-pe/main/models/jarvis.json
       id: jarvis
     - model: https://github.com/kahrendt/microWakeWord/releases/download/stop/stop.json
       id: stop
